@@ -27,7 +27,7 @@ jobs:
         if: always()
         with:
           name: bandit_findings
-          path: bandit_report.json
+          path: bandit_report.pdf
 
           
   docker_image_scan:
@@ -40,6 +40,8 @@ jobs:
 
       - name: setup docker
         uses: docker-practice/actions-setup-docker@v1
+        with: 
+          docker_version: 28.0.1
 
       - name: Build Docker Image
         run: docker build -f Dockerfile -t myapp:latest .
