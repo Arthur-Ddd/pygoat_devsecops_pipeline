@@ -20,14 +20,14 @@ jobs:
         run: pip install bandit 
 
       - name: run bandit
-        run: bandit -ll -ii -r . -f pdf -o bandit_report.json # Apenas as falhas críticas e altas
+        run: bandit -ll -ii -r . -f html -o bandit_report.html # Apenas as falhas críticas e altas
         
       - name: upload report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: bandit_findings
-          path: bandit_report.pdf
+          path: bandit_report.html
 
           
   docker_image_scan:
