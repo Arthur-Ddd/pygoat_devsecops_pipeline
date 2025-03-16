@@ -65,6 +65,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: setup docker
+        uses: docker-practice/actions-setup-docker@v1
+        with: 
+          docker_version: 28.0.1
 
       - name: Start application
         run: |
