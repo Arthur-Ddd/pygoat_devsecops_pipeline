@@ -55,30 +55,36 @@ jobs:
           only-severities: critical,high # Apenas as falhas críticas e altas
           sarif-file: scout-report.sarif
 
+
   dast_scan:
-    name: DAST - Zap scan
+    name: DAST - ZAP Scan
     runs-on: ubuntu-latest
-    
+    services:
+      docker:
+        image: docker:20.10-dind
+        options: --privileged
+        
     steps:
-      - name: Set up DinD service
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Docker
         uses: docker/setup-buildx-action@v2
-      
-      - name: Start Docker service
-        run: |
-          docker run --privileged --name docker-daemon -d docker:20-dind
-  
-      - name: Install Docker client
-        run: |
-          apk add --no-cache docker-cli
-  
-      - name: Start application
+
+      - name: Start Application and ZAP
         run: |
           docker network create zap-network
-          docker run --rm -d --name pygoat --network zap-network -p 8080:8080 myapp:latest
-  
+          docker-compose -f docker-compose.yml up -d
+          
       - name: ZAP Scan
         run: |
-          docker run --rm --network zap-network ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://pygoat:8080
+          docker run --rm --network zap-network ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://myapp:8080
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap_report
+          path: /zap/wrk/report.html
 
     
       
